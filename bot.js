@@ -3,20 +3,25 @@ const mineflayer = require('mineflayer')
 const bot = mineflayer.createBot({
   host: 'anarchia.gg',
   username: process.env.MC_USERNAME,
-  auth: 'microsoft',
   version: '1.21.5'
+})
+
+bot.on('message', (message) => {
+  const text = message.toString()
+
+  if (text.toLowerCase().includes('login')) {
+    setTimeout(() => {
+      bot.chat(`/login ${process.env.MC_PASSWORD}`)
+    }, 1000)
+  }
 })
 
 bot.once('spawn', () => {
   console.log('Bot wszedł na serwer!')
-
-  setTimeout(() => {
-    bot.chat('/farma start')
-  }, 5000)
 })
 
 bot.on('end', () => {
-  console.log('Bot został rozłączony.')
+  console.log('Rozłączono z serwerem.')
 })
 
 bot.on('error', (err) => {
