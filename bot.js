@@ -1,29 +1,45 @@
 const mineflayer = require('mineflayer')
 
-const bot = mineflayer.createBot({
-  host: 'anarchia.gg',
-  username: process.env.MC_USERNAME,
-  version: '1.21.5'
-})
+function startBot() {
+  const bot = mineflayer.createBot({
+    host: 'anarchia.gg',
+    username: process.env.MC_USERNAME,
+    version: '1.21.5'
+  })
 
-bot.on('message', (message) => {
-  const text = message.toString()
+  let loggedIn = false
 
-  if (text.toLowerCase().includes('login')) {
-    setTimeout(() => {
-      bot.chat(`/login ${process.env.MC_PASSWORD}`)
-    }, 1000)
-  }
-})
+  bot.on('message', (message) => {
+    const text = message.toString().toLowerCase()
 
-bot.once('spawn', () => {
-  console.log('Bot wszedł na serwer!')
-})
+    // Gdy serwer prosi o zalogowanie
+    if (!loggedIn && text.includes('login')) {
+      setTimeout(() => {
+        bot.chat(`/login ${process.env.MC_PASSWORD}`)
+      }, 1000)
 
-bot.on('end', () => {
-  console.log('Rozłączono z serwerem.')
-})
+      loggedIn = true
 
-bot.on('error', (err) => {
-  console.log('Błąd:', err.message)
-})
+      // Po zalogowaniu uruchamia farmę
+      setTimeout(() => {
+        bot.chat('/farma start')
+        console.log('Wpisano /farma start')
+      }, 3000)
+    }
+  })
+
+  bot.once('spawn', () => {
+    console.log('Bot wszedł na serwer!')
+  })
+
+  bot.on('end', () => {
+    console.log('Bot rozłączony. Ponowna próba za 10 sekund...')
+    setTimeout(startBot, 10000)
+  })
+
+  bot.on('error', (err) => {
+    console.log('Błąd:', err.message)
+  })
+}
+
+startBot()
