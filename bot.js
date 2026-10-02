@@ -12,7 +12,7 @@ function startBot() {
   const bot = mineflayer.createBot({
     host: 'anarchia.gg',
     username: process.env.MC_USERNAME,
-    version: '1.21.5'
+    version: '1.21.4'
   })
 
   let loggedIn = false
