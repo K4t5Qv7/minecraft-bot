@@ -1,4 +1,12 @@
+const http = require('http')
 const mineflayer = require('mineflayer')
+
+const PORT = process.env.PORT || 3000
+
+http.createServer((req, res) => {
+  res.writeHead(200)
+  res.end('Bot działa')
+}).listen(PORT, '0.0.0.0')
 
 function startBot() {
   const bot = mineflayer.createBot({
@@ -8,23 +16,24 @@ function startBot() {
   })
 
   let loggedIn = false
+  let farmStarted = false
 
   bot.on('message', (message) => {
     const text = message.toString().toLowerCase()
 
-    // Gdy serwer prosi o zalogowanie
     if (!loggedIn && text.includes('login')) {
       setTimeout(() => {
         bot.chat(`/login ${process.env.MC_PASSWORD}`)
+        loggedIn = true
+
+        setTimeout(() => {
+          if (!farmStarted) {
+            bot.chat('/farma start')
+            farmStarted = true
+            console.log('Wpisano /farma start')
+          }
+        }, 3000)
       }, 1000)
-
-      loggedIn = true
-
-      // Po zalogowaniu uruchamia farmę
-      setTimeout(() => {
-        bot.chat('/farma start')
-        console.log('Wpisano /farma start')
-      }, 3000)
     }
   })
 
